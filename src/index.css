@@ -1,0 +1,9 @@
+@import './styles/fonts.css';
+@import 'tailwindcss';
+@import './styles/theme.css';
+@layer base {
+  body { @apply bg-background text-foreground font-sans antialiased; }
+  button, a, input, select { @apply outline-offset-4; }
+  button { @apply cursor-pointer; }
+  ::selection { @apply bg-secondary text-primary; }
+}
