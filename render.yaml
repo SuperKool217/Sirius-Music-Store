@@ -2,7 +2,7 @@ services:
   - type: web
     name: sirius-music-store
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: pnpm install --frozen-lockfile && pnpm run build
     startCommand: pnpm start
     healthCheckPath: /api/health
@@ -14,7 +14,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: SIRIUS_DATA_DIR
-        value: /var/data
+        value: /tmp/sirius-data
       - key: FACTUS_PAY_EMAIL
         sync: false
       - key: FACTUS_PAY_PASSWORD
