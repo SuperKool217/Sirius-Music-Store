@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build outputs and test artifacts
+dist/
+build/
+coverage/
+.vite/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Local order/customer data
+data/
+**/orders.json
+**/orders.json.tmp
+
+# Logs
+*.log
+logs/
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
