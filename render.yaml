@@ -1,25 +1,39 @@
+
 services:
   - type: web
     name: sirius-music-store
     runtime: node
     plan: free
+
+    # Instalación y compilación
     buildCommand: pnpm install --frozen-lockfile && pnpm run build
+
+    # Inicio del servidor
     startCommand: pnpm start
+
+    # Comprobación de disponibilidad
     healthCheckPath: /api/health
-    disk:
-      name: sirius-orders
-      mountPath: /var/data
-      sizeGB: 1
+
+    # Variables de entorno
     envVars:
       - key: NODE_ENV
         value: production
+
+      # Almacenamiento temporal para pruebas
       - key: SIRIUS_DATA_DIR
         value: /tmp/sirius-data
+
+      # Credenciales privadas de Factus Pay Sandbox
       - key: FACTUS_PAY_EMAIL
         sync: false
+
       - key: FACTUS_PAY_PASSWORD
         sync: false
+
+      # Seguridad del webhook
       - key: FACTUS_WEBHOOK_KEY
         sync: false
+
+      # Tiempo de expiración del QR (20 minutos)
       - key: FACTUS_QR_EXPIRATION_SECONDS
         value: "1200"
