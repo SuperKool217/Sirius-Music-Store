@@ -1,48 +1,48 @@
 # Sirius Music Store
 
-Tienda web de instrumentos musicales y accesorios, construida con React, TypeScript y Vite. Incluye un backend Node.js para crear y consultar recaudos mediante **Factus Pay en entorno Sandbox**.
+Tienda web de instrumentos musicales y accesorios, construida con React, TypeScript y Vite. Incluye un backend Node.js que integra **Factus Pay en entorno Sandbox** para crear y consultar recaudos mediante código QR.
 
-> **Estado del proyecto:** integración de pagos en pruebas. No proceses ventas reales ni publiques credenciales Sandbox. Antes de pasar a producción se deben realizar pruebas completas con Factus y revisar almacenamiento, seguridad y operación.
+> **Proyecto académico y demostrativo.** La integración de pagos está en pruebas y utiliza el entorno Sandbox. No procesa ventas reales. No introduzcas datos personales de clientes reales ni publiques credenciales, tokens, llaves de webhook o códigos QR de recaudos.
 
-## Funcionalidades
+## Vista general
 
 - Catálogo de instrumentos y accesorios.
-- Carrito de compras y formulario de envío.
-- Creación de recaudos en Factus Pay Sandbox.
+- Navegación, búsqueda, carrito y formulario de checkout.
+- Backend Node.js para crear recaudos en Factus Pay Sandbox.
 - Visualización del código QR devuelto por Factus Pay.
 - Consulta del estado del recaudo desde el backend.
-- Webhook de Factus Pay con llave compartida y verificación posterior del recaudo contra la API.
-- Cálculo de precios y envío en el backend; no se confía en importes enviados por el navegador.
-- Persistencia básica de pedidos en un archivo JSON.
+- Webhook protegido por una llave compartida y verificación posterior del recaudo contra la API de Factus.
+- Cálculo de precios y envío en el servidor; no se confía en los importes enviados por el navegador.
+- Persistencia demostrativa de pedidos en un archivo JSON.
 
-Factus Pay se utiliza aquí mediante **recaudos con QR**. Esta implementación no es un checkout de tarjeta bancaria.
+Factus Pay se utiliza mediante **recaudos QR**. Esta implementación no es un checkout de tarjeta bancaria.
 
 ## Tecnologías
 
-- React 19, TypeScript y Vite 8.
+- React 19 y TypeScript.
+- Vite 8.
 - Tailwind CSS 4.
-- Node.js 22.12 o superior.
-- API nativa de Node.js (sin Express).
+- Node.js 22.12 o superior (ES modules y API nativa de Node.js).
+- pnpm 10.34.3.
 - Factus Pay Sandbox.
-- Render para despliegue.
-- pnpm 10.34.3 para instalar dependencias usando el lockfile incluido.
+- Render Web Service.
 
 ## Requisitos
 
 - Node.js 22.12 o superior.
 - Corepack y pnpm 10.34.3.
-- Credenciales activas de Factus Pay Sandbox (correo y contraseña).
+- Credenciales habilitadas para Factus Pay Sandbox (correo y contraseña).
 
 ## Instalación local
 
 1. Clona el repositorio:
 
    ```bash
-   git clone URL_DE_TU_REPOSITORIO
-   cd sirius-music-store
+   git clone https://github.com/SuperKool217/Sirius-Music-Store.git
+   cd Sirius-Music-Store
    ```
 
-2. Activa pnpm mediante Corepack e instala las dependencias:
+2. Activa pnpm e instala las dependencias usando el lockfile:
 
    ```bash
    corepack enable
@@ -50,21 +50,19 @@ Factus Pay se utiliza aquí mediante **recaudos con QR**. Esta implementación n
    pnpm install --frozen-lockfile
    ```
 
-3. Crea tu archivo local de variables de entorno a partir del ejemplo:
+3. Crea tu archivo local de variables de entorno:
 
    **Windows PowerShell:**
-
    ```powershell
    Copy-Item .env.example .env
    ```
 
    **macOS / Linux:**
-
    ```bash
    cp .env.example .env
    ```
 
-4. Edita `.env` y coloca tus credenciales Sandbox. No compartas ni subas ese archivo.
+4. Edita `.env` y reemplaza los valores de ejemplo por tus credenciales Sandbox. Genera una llave de webhook propia. **Nunca subas `.env` a GitHub.**
 
 5. Inicia el frontend y el backend de desarrollo:
 
@@ -72,28 +70,36 @@ Factus Pay se utiliza aquí mediante **recaudos con QR**. Esta implementación n
    pnpm dev
    ```
 
-6. Abre la aplicación en [http://localhost:8443](http://localhost:8443). El backend escucha en el puerto `3001` y Vite reenvía las solicitudes `/api` al backend.
+6. Abre <http://localhost:8443>. Vite reenvía las solicitudes `/api` al backend, que escucha en el puerto `3001`.
 
-Comprueba la disponibilidad del backend en [http://localhost:3001/api/health](http://localhost:3001/api/health). La respuesta informa si las credenciales están configuradas, pero nunca devuelve sus valores.
+La disponibilidad del backend se puede comprobar en <http://localhost:3001/api/health>.
+
+### Configuración de Figma
+
+El archivo `.figma/make/site.json` forma parte de la configuración utilizada por `vite.config.ts`. Debe permanecer versionado en el repositorio. No elimines la carpeta `.figma` ni cambies su nombre.
 
 ## Variables de entorno
 
-| Variable | Obligatoria | Descripción |
-|---|---:|---|
-| `FACTUS_PAY_EMAIL` | Sí | Correo de acceso a Factus Pay Sandbox. |
-| `FACTUS_PAY_PASSWORD` | Sí | Contraseña de Factus Pay Sandbox. |
-| `FACTUS_WEBHOOK_KEY` | Para webhook | Secreto propio, aleatorio y largo; debe coincidir con la llave configurada en la URL del webhook de Factus. |
-| `FACTUS_QR_EXPIRATION_SECONDS` | No | Duración del QR en segundos. Valor predeterminado: `1200`; la aplicación admite de `60` a `86400`. |
-| `SIRIUS_DATA_DIR` | Recomendada | Carpeta donde se guarda `orders.json`. En Render se configura como `/var/data`. |
-| `PORT` | No | Puerto que Render asigna automáticamente al servicio. |
+El archivo `.env.example` contiene únicamente marcadores ficticios. Cópialo a `.env` para desarrollo local y reemplaza sus valores.
 
-Para generar una llave para el webhook puedes usar:
+| Variable | Uso |
+|---|---|
+| `FACTUS_PAY_EMAIL` | Correo habilitado para Factus Pay Sandbox. |
+| `FACTUS_PAY_PASSWORD` | Contraseña de Factus Pay Sandbox. |
+| `FACTUS_WEBHOOK_KEY` | Secreto aleatorio propio que debe coincidir con la llave configurada en el webhook de Factus. |
+| `FACTUS_QR_EXPIRATION_SECONDS` | Duración del QR en segundos. Valor predeterminado: `1200`; rango aceptado: `60` a `86400`. |
+| `SIRIUS_DATA_DIR` | Directorio donde se guarda `orders.json`. Localmente usa `./data`; en Render Free se configura como `/tmp/sirius-data`. |
+| `PORT` | Puerto HTTP asignado por Render o definido para desarrollo. |
+
+Las credenciales y los secretos deben permanecer en variables privadas del servidor (archivo `.env` local o panel **Environment** de Render). Nunca deben incluirse en el frontend, en variables `VITE_*`, en capturas de pantalla ni en archivos versionados.
+
+Para generar una llave aleatoria localmente con OpenSSL:
 
 ```bash
 openssl rand -hex 32
 ```
 
-No uses valores de ejemplo como secretos reales. Mantén las variables privadas en el archivo `.env` local o en el panel Environment de Render. Nunca las pongas en variables `VITE_*`, componentes React ni archivos versionados.
+No reutilices una llave publicada ni compartas la URL completa del webhook, porque contiene el secreto como parámetro de consulta.
 
 ## Pruebas y compilación
 
@@ -103,7 +109,7 @@ Ejecuta las pruebas automatizadas:
 pnpm test
 ```
 
-Genera el sitio listo para producción:
+Compila el frontend:
 
 ```bash
 pnpm build
@@ -115,78 +121,77 @@ Inicia el servidor en modo producción después de compilar:
 pnpm start
 ```
 
-El servidor Node sirve tanto los archivos compilados de `dist/` como los endpoints `/api`.
-
 ## Endpoints del backend
 
-| Método | Ruta | Uso |
+| Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/api/health` | Estado del servidor y configuración (sin revelar secretos). |
-| `POST` | `/api/payments/factus/create` | Crea un pedido y solicita el recaudo QR a Factus Pay. |
+| `GET` | `/api/health` | Estado del servidor y configuración (sin revelar valores secretos). |
+| `POST` | `/api/payments/factus/create` | Crea un pedido y solicita un recaudo QR a Factus Pay. |
 | `GET` | `/api/payments/factus/:referenceCode/status` | Consulta el estado del recaudo y actualiza el pedido. |
-| `POST` | `/api/webhooks/factus-pay?key=...` | Recibe una notificación y verifica el recaudo consultando Factus Pay. |
+| `POST` | `/api/webhooks/factus-pay?key=...` | Recibe una notificación y verifica el recaudo consultando la API de Factus. |
 
-## Despliegue en Render
+La llave de la URL del webhook es un secreto. Configúrala en Factus y Render sin publicarla en documentación, capturas ni registros.
 
-El archivo `render.yaml` contiene un Blueprint para crear el servicio web. Está configurado con un plan compatible con disco persistente y un disco de `1 GB` montado en `/var/data`.
+## Despliegue en Render (plan Free)
 
-1. Sube el contenido de este proyecto a un repositorio de GitHub.
-2. En Render, crea un **Blueprint** y conecta ese repositorio. Render leerá `render.yaml`.
-3. Cuando Render solicite las variables secretas, introduce:
-   - `FACTUS_PAY_EMAIL`
-   - `FACTUS_PAY_PASSWORD`
-   - `FACTUS_WEBHOOK_KEY`
-4. Espera a que termine el despliegue y abre:
+El archivo `render.yaml` configura un **Web Service Node.js en el plan Free**:
 
-   ```text
-   https://TU-SERVICIO.onrender.com/api/health
-   ```
+- Instalación y compilación: `pnpm install --frozen-lockfile && pnpm run build`.
+- Inicio: `pnpm start`.
+- Health check: `/api/health`.
+- Directorio de pedidos: `/tmp/sirius-data`.
+- Variables privadas solicitadas por Render: `FACTUS_PAY_EMAIL`, `FACTUS_PAY_PASSWORD` y `FACTUS_WEBHOOK_KEY`.
 
-   Debe responder con `status: "ok"`, `environment: "sandbox"` y `credentialsConfigured: true` cuando las credenciales estén configuradas.
+Pasos:
 
-5. Configura en el panel de Factus Pay el webhook con esta URL, sustituyendo el dominio y la llave:
+1. En Render, crea o sincroniza un Blueprint conectado a este repositorio.
+2. Cuando Render solicite las variables secretas, introdúcelas directamente en el panel. No las escribas en `render.yaml`.
+3. Espera a que finalice el despliegue.
+4. Comprueba `https://TU-SERVICIO.onrender.com/api/health`.
+5. Configura el webhook de Factus con la ruta `/api/webhooks/factus-pay` y la misma llave privada definida como `FACTUS_WEBHOOK_KEY`.
 
-   ```text
-   https://TU-SERVICIO.onrender.com/api/webhooks/factus-pay?key=TU_FACTUS_WEBHOOK_KEY
-   ```
+### Limitaciones del plan Free y del almacenamiento
 
-   La llave de la URL debe coincidir exactamente con `FACTUS_WEBHOOK_KEY`. Esa URL contiene un secreto: no la publiques ni la compartas.
+Render Free suspende los Web Services después de 15 minutos sin tráfico entrante; al recibir una nueva solicitud, el servicio puede tardar alrededor de un minuto en volver a estar disponible. El sistema de archivos del servicio es efímero: los cambios locales se pierden al reiniciar, redeplegar o suspender el servicio.
 
-**Costos de Render:** el servicio usa el plan `starter` porque los discos persistentes no están disponibles en los servicios Free. Revisa los precios vigentes de Render antes de crear el servicio.
+Por eso, en esta versión los pedidos guardados en `/tmp/sirius-data/orders.json` son **temporales**. Esta configuración es adecuada para demostraciones y pruebas Sandbox, no para operar una tienda con pedidos reales. Consulta las [limitaciones oficiales de Render Free](https://render.com/docs/free).
 
-## Probar un pago Sandbox
+## Probar Factus Pay Sandbox
 
-1. Despliega la aplicación o ejecútala localmente con las variables Sandbox.
-2. Agrega un producto al carrito y completa los datos solicitados en el checkout.
-3. Sirius solicita el recaudo y muestra el QR que devuelve Factus Pay.
-4. Usa el simulador oficial de Factus Pay Sandbox para probar los escenarios disponibles.
-5. La interfaz consulta el estado del recaudo. El pedido solo se marca como pagado cuando la API de Factus confirma `paid` y el importe coincide con el pedido.
+1. Inicia la aplicación localmente o abre el despliegue de Render.
+2. Agrega un producto al carrito y completa el checkout usando datos ficticios.
+3. Sirius solicita el recaudo y muestra el QR devuelto por Factus Pay.
+4. Usa el [simulador oficial de Factus Pay Sandbox](https://pay-developers.factus.com.co/sandbox/simulator/) para representar un pago exitoso o fallido.
+5. La aplicación consulta el estado del recaudo. El pedido solo se marca como pagado cuando el backend confirma el estado `paid` y comprueba que el importe coincide con el pedido.
 
-Simulador: <https://pay-developers.factus.com.co/sandbox/simulator/>
+No compartas el QR o la referencia de una operación fuera de la prueba correspondiente.
 
-## Reglas de importes incluidas
+## Reglas de importes
 
-- El backend mantiene un catálogo de precios propio y vuelve a calcular el total recibido del carrito.
+- El backend mantiene su propio catálogo y vuelve a calcular el total del carrito.
 - El envío cuesta COP $15.000.
 - El envío es gratis desde COP $600.000 de subtotal.
-- La aplicación rechaza importes fuera del rango configurado en el código para Factus Pay Sandbox: COP $1.000 a COP $12.100.000.
+- La aplicación valida los importes frente al rango configurado para Factus Pay Sandbox: COP $1.000 a COP $12.100.000.
 
 Si cambias productos o precios en la interfaz, actualiza también `server/catalog.js`. El backend es la fuente autoritativa del importe.
 
-## Persistencia y limitaciones actuales
+## Seguridad, privacidad y trabajo futuro
 
-Los pedidos se guardan en `orders.json` dentro de `SIRIUS_DATA_DIR`. Para este MVP se espera una sola instancia de servidor y un disco persistente. Este almacenamiento en archivo no está diseñado para múltiples instancias ni para altos volúmenes de concurrencia.
+- No guardes credenciales, tokens, claves ni archivos `.env` en Git.
+- No subas `orders.json`, archivos temporales ni datos personales de compradores.
+- El almacenamiento JSON actual guarda datos de contacto y envío; utiliza únicamente datos ficticios mientras esta versión sea una demostración.
+- Antes de producción se debe migrar el almacenamiento a una base de datos persistente (por ejemplo, PostgreSQL), definir controles de acceso y retención de datos, revisar los webhooks y realizar pruebas de seguridad y conciliación.
+- La integración actual utiliza exclusivamente Factus Pay Sandbox. No introduzcas credenciales de producción en este proyecto de demostración.
 
-Antes de operar en producción o escalar el sitio, migra los pedidos a una base de datos transaccional (por ejemplo PostgreSQL), añade controles operativos y realiza pruebas de seguridad y conciliación. La disponibilidad de Factus Pay y las credenciales de Sandbox también deben validarse directamente con el proveedor.
+## Documentación
 
-## Documentación de Factus Pay
-
-- Autenticación: <https://pay-developers.factus.com.co/autenticacion/>
-- Crear un recaudo: <https://pay-developers.factus.com.co/recaudos/crear/>
-- Consultar un recaudo: <https://pay-developers.factus.com.co/recaudos/ver/>
-- Webhooks: <https://pay-developers.factus.com.co/webhooks/>
-- Simulador Sandbox: <https://pay-developers.factus.com.co/sandbox/simulator/>
+- [Factus Pay: autenticación](https://pay-developers.factus.com.co/autenticacion/)
+- [Factus Pay: crear un recaudo](https://pay-developers.factus.com.co/recaudos/crear/)
+- [Factus Pay: consultar un recaudo](https://pay-developers.factus.com.co/recaudos/ver/)
+- [Factus Pay: webhooks](https://pay-developers.factus.com.co/webhooks/)
+- [Factus Pay: simulador Sandbox](https://pay-developers.factus.com.co/sandbox/simulator/)
+- [Render: servicios gratuitos](https://render.com/docs/free)
 
 ---
 
-**Sirius Music Store** · Proyecto de tienda de instrumentos musicales.
+**Sirius Music Store** · Proyecto académico de tienda digital de instrumentos musicales y accesorios.
