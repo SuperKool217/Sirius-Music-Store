@@ -1,1 +1,10 @@
-
+{
+  "description": "Discover and purchase musical instruments and accessories with an intuitive, visually appealing platform designed for musicians of all levels.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
